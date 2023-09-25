@@ -1,13 +1,13 @@
 # OpenBSD test Vagrant environment
 Two OpenBSD VMs.
 
-Cache the box locally:
+Cache the box locally (not required, only if you haven't used it and want to start offline):
 ```
 vagrant box add generic/openbsd7
 ```
 Start up:
 ```
-vagrant up
+vagrant up --paralell
 ```
 
 SSH to a VM:
