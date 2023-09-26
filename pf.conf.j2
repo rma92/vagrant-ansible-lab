@@ -1,0 +1,47 @@
+wan0 = "{{ ansible_default_ipv4.interface }}"
+icmp_types = "{ echoreq unreach }"
+
+# pfctl -t "table" -T show
+#   Display table contents.
+# pfctl -t bruteforce -T expire 86400
+#   Remove bruteforce table entries older than 86400 seconds.
+# pfctl -t bruteforce -T delete 12.34.56.78
+#   Immediately delete bruteforce table entry
+
+table <bruteforce> persist
+
+table <martians> {
+  0.0.0.0/8 10.0.0.0/8 100.64.0.0/10            \
+  127.0.0.0/8 169.254.0.0/16 172.16.0.0/12      \
+  192.0.0.0/24 192.0.2.0/24 192.88.99.0/24      \
+  192.168.0.0/16 198.18.0.0/15 198.51.100.0/24  \
+  203.0.113.0/24 224.0.0.0/3 255.255.255.255/32 \
+  ::/128 ::/96 ::1/128 ::ffff:0:0/96 100::/64   \
+  2001:10::/28 2001:2::/48 2001:db8::/32        \
+  3ffe::/16 fec0::/10 fc00::/7 }
+
+set block-policy return
+set loginterface egress
+set skip on lo0
+
+match in all scrub (no-df random-id max-mss 1440)
+antispoof quick for { egress $wan0 }
+block quick from <bruteforce>
+block in quick on egress from <martians> to any
+block return out quick on egress from any to <martians>
+block all
+
+# SSH
+# Add brute force hosts (5 attempts within 3 seconds)
+# to the bruteforce table.
+pass in log on $wan0 proto tcp to port { {{ ssh_port }} } \
+    keep state (max-src-conn 15, max-src-conn-rate 5/3, \
+        overload <bruteforce> flush global) label ssh-traffic
+
+pass out quick
+
+# ICMP
+pass in on egress inet proto icmp all icmp-type $icmp_types
+pass in on egress inet6 proto icmp6 all icmp6-type $icmp_types
+pass in on egress inet6 proto icmp6 all \
+  icmp6-type { routeradv neighbrsol neighbradv }

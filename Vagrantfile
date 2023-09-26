@@ -8,7 +8,7 @@ config.vm.define "openbsd1" do |node1|
     vb.memory = "768"
   end
   node1.vm.provision "shell", inline: <<-SHELL
-    pkg_add -I vim-9.0.0192-no_x11 git
+    pkg_add -I vim-9.0.0192-no_x11 git ansible py3-pip
 
     # Define the unbound configuration
     unbound_conf='
@@ -52,7 +52,7 @@ end
       vb.memory = "768"
     end
     node2.vm.provision "shell", inline: <<-SHELL
-      pkg_add -I vim-9.0.0192-no_x11 git
+      pkg_add -I vim-9.0.0192-no_x11 git ansible py3-pip
       rcctl stop resolvd
       rcctl disable resolvd
       echo "nameserver 192.168.33.10" > /etc/resolv.conf
@@ -69,7 +69,7 @@ end
       vb.memory = "768"
     end
     node3.vm.provision "shell", inline: <<-SHELL
-      pkg_add -I vim-9.0.0192-no_x11 git
+      pkg_add -I vim-9.0.0192-no_x11 git ansible py3-pip
       rcctl stop resolvd
       rcctl disable resolvd
       echo "nameserver 192.168.33.10" > /etc/resolv.conf
