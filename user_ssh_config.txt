@@ -1,0 +1,9 @@
+Host *
+  AddKeysToAgent yes
+  AddressFamily inet
+
+Host openbsd2.example.gs openbsd2
+  Hostname openbsd2.example.gs
+  Port 22
+  User root
+  IdentityFile ~/.ssh/id_rsa

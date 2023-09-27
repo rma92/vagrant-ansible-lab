@@ -1,6 +1,11 @@
 # OpenBSD test Vagrant environment
-Two OpenBSD VMs.
+Three OpenBSD VMs.
 
+Get going fast:
+```
+ssh-keygen -t rsa -b 4096 -N "" -f ./id_rsa
+vagrant up
+```
 Cache the box locally (not required, only if you haven't used it and want to start offline):
 ```
 vagrant box add generic/openbsd7
